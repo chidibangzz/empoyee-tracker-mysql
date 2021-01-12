@@ -7,6 +7,7 @@ const connection = mysql.createConnection({
     port: 3306,
     user: "root",
     password: "Maryland123!",
+    //Maryland123!
     database: "employee_trackerdb"
 });
 
@@ -17,7 +18,6 @@ connection.connect(async (err) => {
     if (err) throw err;
     console.log("connected as id " + connection.threadId + "\n");
     await start();
-    connection.end
 });
 
 
@@ -26,39 +26,46 @@ async function start() {
         name: "choice",
         type: "rawlist",
         message: "What would you like to do?",
-        choices: ["View Employee", "View Department", "View Role", "View Manager",
-            "Add employee", " Add Role", " Add Department"],
+        choices: [
+                    "View Employee", "View Department", "View Role",
+                    "Add Employee", "Add Role", "Add Department",
+                    "Update Employee By Role",
+                    "EXIT"
+                ]
 
-    })
+    });
+
     console.log(choice)
     switch (choice) {
         case "View Employee":
-            viewEmployee();
+            await viewEmployee();
             break;
-    }
-    switch (choice) {
         case "View Department":
-            ViewDepartment();
+            await viewDepartment();
             break;
-    }
-    switch (choice) {
         case "View Role":
-            ViewRole();
+            await viewRole();
             break;
+        case "Add Employee":
+            await addEmployee();
+            break;
+        case "Add Role":
+            // TODO
+            await addRole();
+            break;
+        case "Add Department":
+            // TODO
+            await addDepartment();
+            break;
+        case "Update Employee By Role":
+            // TODO
+            await updateEmployeeByRole();
+            break;
+        default: // EXIT
+            return connection.end();
     }
-    switch (choice) {
-        case "Add employee":
-            addEmployee();
-            break;
-    }switch (choice) {
-        case "View Add Role":
-            addRole();
-            break;
-    }switch (choice) {
-        case "Add department":
-            addDepartment();
-            break;
-    }
+
+    start();
 }
 
 
@@ -68,59 +75,112 @@ async function viewEmployee() {
     const SQL_STATEMENT = "SELECT * FROM employee";
     const [rows, fields] = await connection.promise().query(SQL_STATEMENT);
     console.table(rows);
-    start()
 }
 
 
 
 
-async function ViewDepartment() {
+async function viewDepartment() {
     const SQL_STATEMENT = 'SELECT * FROM department';
     const [rows, fields] = await connection.promise().query(SQL_STATEMENT);
     console.table(rows);
-    start()
 }
 
-async function ViewRole() {
+async function viewRole() {
     const SQL_STATEMENT = 'SELECT * FROM role';
     const [rows, fields] = await connection.promise().query(SQL_STATEMENT);
     console.table(rows);
-    start()
 }
 
 
 async function addEmployee() {
-    let response = await inquirer
-        .prompt({
-            name: "addEmployee",
+
+    // Get All Roles
+    let ROLE_SQL_STATEMENT = "SELECT * FROM role";
+    const[roleRows, roleFields] = await connection.promise().query(ROLE_SQL_STATEMENT);
+
+    // Get All Managers
+    let EMPLOYEE_SQL_STATEMENT = "SELECT * FROM employee";
+    const[managerRows, managerFields] = await connection.promise().query(EMPLOYEE_SQL_STATEMENT);
+
+    let answer = await inquirer
+        .prompt([{
+            name: "first_name",
             type: "input",
-            message: "Which employee would you like to add?"
-        });
-    var name = response.addEmployee
-    addEmployeeName(name);
-    async function addEmployeeName(name) {
+            message: "What is the first name of the employee?"
+        },
+        {
+            name: "last_name",
+            type: "input",
+            message: "What is the last name of the employee?"
+        },
+        {
+            name: "role_title",
+            type: "list",
+            message: "Choose employee role?",
+            choices: roleRows.map(role => role.title)
+        },
+        {
+            name: "manager_full_name",
+            type: "list",
+            message: "Who is the employee manager?",
+            choices: managerRows.map(manager => `${manager.first_name} ${manager.last_name}`)
+        }
+    ]);
 
-        console.log(name);
-        const SQL_STATEMENT = "INSERT into employee set ?";
-        response = await
-            connection.promise().query(SQL_STATEMENT, [name]);
-        console.log("successfully added")
-        start();
-    }
+    
+    // Find role ID
+    let {id: roleID} = roleRows.find(role => role.title === answer.role_title);
+    let {id: managerID} = managerRows.find(manager => `${manager.first_name} ${manager.last_name}` === answer.manager_full_name);
 
+    const SQL_STATEMENT = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)";
 
+    response = await connection.promise().query(SQL_STATEMENT, [answer.first_name, answer.last_name, roleID, managerID]);
 
+    console.log("successfully added")
 
 }
 
 async function addRole() {
-    const SQL_STATEMENT = "SELECT * FROM employee";
-    const [rows, fields] = await connection.promise().query(SQL_STATEMENT);
-    console.table(rows);
+    const SQL_STATEMENT = "SELECT * FROM department";
+    const [departmentRows, fields] = await connection.promise().query(SQL_STATEMENT);
+    console.table(departmentRows);
+
+    let answer = await inquirer
+        .prompt([{
+            name: "roleTitle",
+            type: "input",
+            message: "Whats the title of the role?"
+        },
+        {
+            name: "salary",
+            type: "input",
+            message: "Salary?"
+        },
+        {
+            name: "departmentName",
+            type: "list",
+            message: "Choose Department?",
+            choices: departmentRows.map(department => department.name)
+        },
+        
+       
+    ]);
+    console.log(answer)
+    let {id: departmentId} = departmentRows.find(department => department.name === answer.departmentName);
+    const SQL_STATEMENT = "INSERT INTO role (title, salary, departmentName) VALUES (?,?,?)";
+
+    response = await connection.promise().query(SQL_STATEMENT, [answer.title, answer.salary, departmentName]);
+
+    console.log("successfully added")
 }
 
 async function addDepartment() {
     const SQL_STATEMENT = "SELECT * FROM employee";
     const [rows, fields] = await connection.promise().query(SQL_STATEMENT);
     console.table(rows);
+}
+
+async function updateEmployeeByRole() {
+    
 }
