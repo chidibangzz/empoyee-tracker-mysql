@@ -207,15 +207,14 @@ async function addDepartment() {
 
 }
 
-
 async function updateEmployeeByRole() {
-    let employeeUpdate= "SELECT first_name, last_name FROM employee"
-    const[employeeSql, roleFields] = await connection.promise().query(employeeUpdate);
-    console.table(employeeSql)
+    let SQL_STATEMENT= "SELECT id, first_name, last_name FROM employee"; // Get id, first_name, last_name of all employees
+    const[employeeSql, roleFields] = await connection.promise().query(SQL_STATEMENT); // Get id, title of all roles
+    console.table(employeeSql);
     
-    let roleUpdate = "SELECT title FROM role";
+    let roleUpdate = "SELECT * FROM role";
     const[roleSql, managerFields] = await connection.promise().query(roleUpdate);
-    console.table(roleSql)
+    console.table(roleSql);
 
 
     let answer = await inquirer
@@ -237,15 +236,14 @@ async function updateEmployeeByRole() {
     console.log(answer)
     let {id: newRole} = roleSql.find(Rupdate => Rupdate.title === answer.role_title);
     
-    let {id: addEmployee} = employeeSql.find(employee => `${employee.first_name} ${employee.last_name}` === answer.updatedNew);
+    let {id: addEmployee} = employeeSql.find(employee => `${employee.first_name} ${employee.last_name}` === answer.employeeUpdater);
 
-      employeeUpdate = "INSERT INTO employee (first_name, last_name) VALUES (?,?)";
-
-
-    response = await connection.promise().query(employeeUpdate, [addEmployee, newRole]);
-
-    console.log("successfully added")
+      SQL_STATEMENT = "UPDATE employee SET role_id = ?  WHERE id = ?";
+  
 
 
+    response = await connection.promise().query(SQL_STATEMENT, [addEmployee, newRole]); 
+
+    console.table([addEmployee,newRole ])
 
 }
