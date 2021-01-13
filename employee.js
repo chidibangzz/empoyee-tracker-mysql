@@ -133,16 +133,17 @@ async function addEmployee() {
     let {id: roleID} = roleRows.find(role => role.title === answer.role_title);
     let {id: managerID} = managerRows.find(manager => `${manager.first_name} ${manager.last_name}` === answer.manager_full_name);
 
+
     const SQL_STATEMENT = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)";
 
     response = await connection.promise().query(SQL_STATEMENT, [answer.first_name, answer.last_name, roleID, managerID]);
 
-    console.log("successfully added")
+    console.log("successfully added");
 
 }
 
 async function addRole() {
-    const SQL_STATEMENT = "SELECT * FROM department";
+    let SQL_STATEMENT = "SELECT * FROM department";
     const [departmentRows, fields] = await connection.promise().query(SQL_STATEMENT);
     console.table(departmentRows);
 
@@ -168,18 +169,44 @@ async function addRole() {
     ]);
     console.log(answer)
     let {id: departmentId} = departmentRows.find(department => department.name === answer.departmentName);
-    const SQL_STATEMENT = "INSERT INTO role (title, salary, departmentName) VALUES (?,?,?)";
+     SQL_STATEMENT = "INSERT INTO role (title, salary, department_id) VALUES (?,?,?)";
 
-    response = await connection.promise().query(SQL_STATEMENT, [answer.title, answer.salary, departmentName]);
+    response = await connection.promise().query(SQL_STATEMENT, [answer.roleTitle, answer.salary, departmentId]);
 
     console.log("successfully added")
 }
 
+
+
+
+
+
+
+
+
+
 async function addDepartment() {
-    const SQL_STATEMENT = "SELECT * FROM employee";
-    const [rows, fields] = await connection.promise().query(SQL_STATEMENT);
-    console.table(rows);
+    let SQL = "SELECT * from department";
+    const [addDepartment, fields] = await connection.promise().query(SQL);
+
+    console.table(addDepartment);
+    let answer = await inquirer
+        .prompt([{
+            name: "addDepart",
+            type: "input",
+            message: "Which department would you like to add?"
+        },
+        
+    ]);
+    console.table(answer)
+    const SQL_STATEMENT = "INSERT INTO department (name) VALUES (?)";
+
+    response = await connection.promise().query(SQL_STATEMENT, [answer.addDepart]);
+
+    console.log("successfully added")
+
 }
+
 
 async function updateEmployeeByRole() {
     
