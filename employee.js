@@ -209,5 +209,43 @@ async function addDepartment() {
 
 
 async function updateEmployeeByRole() {
+    let employeeUpdate= "SELECT first_name, last_name FROM employee"
+    const[employeeSql, roleFields] = await connection.promise().query(employeeUpdate);
+    console.table(employeeSql)
     
+    let roleUpdate = "SELECT title FROM role";
+    const[roleSql, managerFields] = await connection.promise().query(roleUpdate);
+    console.table(roleSql)
+
+
+    let answer = await inquirer
+        .prompt([  {
+            name: "employeeUpdater",
+            type: "input",
+            message: "choose an employee to update?",
+            
+            
+        }, 
+        {
+            name: "role_title",
+            type: "list",
+            message: "Choose a new role title?",
+            choices: roleSql.map(Rupdate => Rupdate.title)
+        }, 
+    ]);
+
+    console.log(answer)
+    let {id: newRole} = roleSql.find(Rupdate => Rupdate.title === answer.role_title);
+    ``
+  //let {id: add} = employeeSql.find(employee => `${employee.first_name} ${employee.last_name}` === answer.updatedNew);
+
+     employeeUpdate = "INSERT INTO employee (first_name, last_name) VALUES (?,?)";
+
+
+    response = await connection.promise().query(employeeUpdate, [answer.employeeUpdater, newRole]);
+
+    console.log("successfully added")
+
+
+
 }
