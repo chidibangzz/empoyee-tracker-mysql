@@ -221,9 +221,9 @@ async function updateEmployeeByRole() {
     let answer = await inquirer
         .prompt([  {
             name: "employeeUpdater",
-            type: "input",
+            type: "list",
             message: "choose an employee to update?",
-            
+            choices: employeeSql.map(employee => `${employee.first_name} ${employee.last_name}`)
             
         }, 
         {
@@ -236,13 +236,13 @@ async function updateEmployeeByRole() {
 
     console.log(answer)
     let {id: newRole} = roleSql.find(Rupdate => Rupdate.title === answer.role_title);
-    ``
-  //let {id: add} = employeeSql.find(employee => `${employee.first_name} ${employee.last_name}` === answer.updatedNew);
+    
+    let {id: addEmployee} = employeeSql.find(employee => `${employee.first_name} ${employee.last_name}` === answer.updatedNew);
 
-     employeeUpdate = "INSERT INTO employee (first_name, last_name) VALUES (?,?)";
+      employeeUpdate = "INSERT INTO employee (first_name, last_name) VALUES (?,?)";
 
 
-    response = await connection.promise().query(employeeUpdate, [answer.employeeUpdater, newRole]);
+    response = await connection.promise().query(employeeUpdate, [addEmployee, newRole]);
 
     console.log("successfully added")
 
