@@ -26,8 +26,7 @@ CREATE TABLE employee (
     manager_id int NOT NULL,
     primary key(id)
 );
-INSERT INTO department (name) 
-VALUES
+INSERT INTO department (name) VALUES
     ('SALES'),('FINANCE'),('AUDIT'),
     ('CASH'),('SERVICES'),('TECHNOLOGY');
    
@@ -46,6 +45,8 @@ SELECT * FROM employee;
 INSERT INTO role (title, salary, department_id) values('Sales Manager', 77600,1);
 INSERT INTO role (title, salary, department_id) values('FINANCE Manager', '89000',2);
 INSERT INTO role (title, salary, department_id) values('AUDIT Manager', '120000',3);
+INSERT INTO role (title, salary, department_id) values('Cash Assoicate', '20000',4);
+INSERT INTO role (title, salary, department_id) values('Services Engineer', '115000',5);
 INSERT INTO role (title, salary, department_id) values('TECH MANAGER', '350000',6);
 
 SELECT * FROM role;
@@ -55,5 +56,12 @@ SELECT title, first_name, last_name
 FROM role
 left JOIN employee ON role.id = employee.role_id;
 
-SELECT first_name
+SELECT first_name, last_name
 FROM employee;
+
+
+SELECT first_name, last_name
+From employee; 
+
+SELECT title, salary
+FROM role;
