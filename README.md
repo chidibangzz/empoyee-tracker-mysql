@@ -1,10 +1,12 @@
-## Project title
-Employee tracker app
+## Employee tracker app
+View all departments in the company
+
+## Description
 This app allows you to view department, employee, and roles.
 Employee tracker allows you to add an employee and update and employee by their role
 
 ## Motivation
-motivation was to build an organized team based off of the team members i have. 
+Wanted to add structure to build an organized team based off of the members i have.
 
 ## Screenshots
 
